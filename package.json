@@ -1,0 +1,51 @@
+{
+  "name": "capacitor-google-mlkit-vision",
+  "version": "0.0.1",
+  "description": "Use on-device machine learning in your apps to easily solve real-world problems.",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc && rollup -c",
+    "clean": "rimraf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Philipp Grosswiler",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/core": "latest"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.0",
+    "typescript": "^3.2.4",
+    "@capacitor/ios": "latest",
+    "@capacitor/android": "latest",
+    "@rollup/plugin-node-resolve": "^8.0.0"
+  },
+  "files": [
+    "dist/",
+    "ios/",
+    "android/",
+    "CapacitorGoogleMlkitVision.podspec"
+  ],
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trancee/capacitor-google-mlkit-vision.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trancee/capacitor-google-mlkit-vision.git/issues"
+  }
+}
