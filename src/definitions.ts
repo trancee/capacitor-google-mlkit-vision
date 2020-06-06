@@ -6,10 +6,15 @@ declare module "@capacitor/core" {
 
 // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions
 export interface FaceDetectorOptions {
+  // Defines options for characterizing attributes such as "smiling" and "eyes open".
+  // Processing time increases as extra classification to search.
+  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ClassificationMode
+  classificationMode?: ClassificationMode,
   // Defines options to control accuracy / speed trade-offs in performing face detection.
   // In general, choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster mode will generally result in detecting fewer faces.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.PerformanceMode
   performanceMode?: PerformanceMode,
+
   // Defines options to enable face landmarks or not.
   // Processing time increases as the extra face landmark to search.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.LandmarkMode
@@ -18,13 +23,11 @@ export interface FaceDetectorOptions {
   // Processing time increases as the number of contours to search.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ContourMode
   contourMode?: ContourMode,
-  // Defines options for characterizing attributes such as "smiling" and "eyes open".
-  // Processing time increases as extra classification to search.
-  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ClassificationMode
-  classificationMode?: ClassificationMode,
+
   // Sets the smallest desired face size, expressed as a proportion of the width of the head to the image width.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.Builder#public-facedetectoroptions.builder-setminfacesize-float-minfacesize
   minFaceSize?: number,
+
   // Enables face tracking, which will maintain a consistent ID for each face when processing consecutive frames.
   // Tracking should be disabled for handling a series of non-consecutive still images.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.Builder#public-facedetectoroptions.builder-enabletracking
@@ -63,14 +66,17 @@ export interface FaceContour {
 export interface Rect {
   // The X coordinate of the left side of the rectangle
   left: number,
-  x: number,
   // The Y coordinate of the top of the rectangle
   top: number,
-  y: number,
   // The X coordinate of the right side of the rectangle
   right: number,
   // The Y coordinate of the bottom of the rectangle
   bottom: number,
+
+  // The X coordinate of the left side of the rectangle
+  x: number,
+  // The Y coordinate of the top of the rectangle
+  y: number,
   // The rectangle's width
   width: number,
   // The rectangle's height
@@ -82,10 +88,15 @@ export interface Rect {
 export interface Face {
   // Returns the axis-aligned bounding rectangle of the detected face.
   bounds: Rect,
+
   // Returns a list of face landmarks.
   landmarks?: FaceLandmark[],
   // Returns a list of face contours.
   contours?: FaceContour[],
+
+  // Returns the tracking ID if the tracking is enabled.
+  trackingId?: number,
+
   // Returns the rotation of the face about the horizontal axis of the image.
   // Positive euler X is the face is looking up.
   headEulerAngleX: number,
@@ -95,14 +106,13 @@ export interface Face {
   // Returns the rotation of the face about the axis pointing out of the image.
   // Positive euler z is a counter-clockwise rotation within the image plane.
   headEulerAngleZ: number,
+
+  // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
+  smilingProbability?: number,
   // Returns a value between 0.0 and 1.0 giving a probability that the face's left eye is open.
   leftEyeOpenProbability?: number,
   // Returns a value between 0.0 and 1.0 giving a probability that the face's right eye is open.
   rightEyeOpenProbability?: number,
-  // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
-  smilingProbability?: number,
-  // Returns the tracking ID if the tracking is enabled.
-  trackingId?: number,
 }
 
 export type ProcessResult = {
