@@ -80,6 +80,9 @@ public class GoogleMLKitVision extends Plugin {
                         // The image's counter-clockwise orientation degrees.
                         0
                 );
+            } else {
+                call.reject("Must provide an image");
+                return;
             }
 
             // Creates a new builder to build FaceDetectorOptions.
@@ -88,28 +91,30 @@ public class GoogleMLKitVision extends Plugin {
 
             JSObject optionsObject = call.getObject("options", null);
             if (optionsObject != null) {
-                Integer performanceMode = optionsObject.getInteger("performanceMode");
-                Integer landmarkMode = optionsObject.getInteger("landmarkMode");
-                Integer contourMode = optionsObject.getInteger("contourMode");
-                Integer classificationMode = optionsObject.getInteger("classificationMode");
+                if (optionsObject.has("classificationMode")) {
+                    Integer classificationMode = optionsObject.getInteger("classificationMode");
+                    
+                    // Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
+                    builder.setClassificationMode(classificationMode);
+                }
+                if (optionsObject.has("performanceMode")) {
+                    Integer performanceMode = optionsObject.getInteger("performanceMode");
 
-                Boolean enableTracking = optionsObject.getBoolean("enableTracking", false);
-
-                if (performanceMode != null) {
                     // Extended option for controlling additional accuracy / speed trade-offs in performing face detection.
                     builder.setPerformanceMode(performanceMode);
                 }
-                if (landmarkMode != null) {
+
+                if (optionsObject.has("landmarkMode")) {
+                    Integer landmarkMode = optionsObject.getInteger("landmarkMode");
+                    
                     // Sets whether to detect no landmarks or all landmarks.
                     builder.setLandmarkMode(landmarkMode);
                 }
-                if (contourMode != null) {
+                if (optionsObject.has("contourMode")) {
+                    Integer contourMode = optionsObject.getInteger("contourMode");
+
                     // Sets whether to detect no contours or all contours.
                     builder.setContourMode(contourMode);
-                }
-                if (classificationMode != null) {
-                    // Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
-                    builder.setClassificationMode(classificationMode);
                 }
 
                 if (optionsObject.has("minFaceSize")) {
@@ -119,7 +124,8 @@ public class GoogleMLKitVision extends Plugin {
                     builder.setMinFaceSize(minFaceSize.floatValue());
                 }
 
-                if (enableTracking == true) {
+                Boolean enableTracking = optionsObject.getBoolean("enableTracking", false);
+                if (enableTracking) {
                     // Enables face tracking, which will maintain a consistent ID for each face when processing consecutive frames.
                     builder.enableTracking();
                 }
@@ -151,7 +157,7 @@ public class GoogleMLKitVision extends Plugin {
                                 for (Face face : faces) {
                                     JSObject faceObject = new JSObject();
 
-                                    {
+                                    { // Bounds
                                         // Returns the axis-aligned bounding rectangle of the detected face.
                                         Rect bounds = face.getBoundingBox();
 
@@ -174,7 +180,7 @@ public class GoogleMLKitVision extends Plugin {
                                         faceObject.put("bounds", boundsObject);
                                     }
 
-                                    {
+                                    { // Landmarks
                                         JSArray landmarksArray = new JSArray();
 
                                         // Gets a list of all available FaceLandmarks.
@@ -182,9 +188,9 @@ public class GoogleMLKitVision extends Plugin {
                                         List<FaceLandmark> landmarks = face.getAllLandmarks();
 
                                         for (FaceLandmark landmark : landmarks) {
-                                            JSObject landmarkObject = new JSObject();
-
                                             JSObject pointObject = pointHelper.get(landmark.getPosition());
+
+                                            JSObject landmarkObject = new JSObject();
 
                                             // Gets the FaceLandmark.LandmarkType type.
                                             landmarkObject.put("type", landmark.getLandmarkType());
@@ -199,7 +205,7 @@ public class GoogleMLKitVision extends Plugin {
                                         }
                                     }
 
-                                    {
+                                    { // Contours
                                         JSArray contoursArray = new JSArray();
 
                                         // Gets a list of all available FaceContours.
@@ -207,8 +213,6 @@ public class GoogleMLKitVision extends Plugin {
                                         List<FaceContour> contours = face.getAllContours();
 
                                         for (FaceContour contour : contours) {
-                                            JSObject contourObject = new JSObject();
-
                                             // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
                                             // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceContour#getPoints()
                                             List<PointF> points = contour.getPoints();
@@ -220,6 +224,8 @@ public class GoogleMLKitVision extends Plugin {
                                             }
 
                                             if (pointsArray.length() > 0) {
+                                                JSObject contourObject = new JSObject();
+
                                                 // Gets the FaceContour.ContourType type.
                                                 contourObject.put("type", contour.getFaceContourType());
                                                 // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
@@ -232,6 +238,14 @@ public class GoogleMLKitVision extends Plugin {
                                         if (contoursArray.length() > 0) {
                                             faceObject.put("contours", contoursArray);
                                         }
+                                    }
+
+                                    // Returns the tracking ID if the tracking is enabled.
+                                    // Otherwise, returns null;
+                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getTrackingId()
+                                    Integer trackingId = face.getTrackingId();
+                                    if (trackingId != null) {
+                                        faceObject.put("trackingId", trackingId);
                                     }
 
                                     // Returns the rotation of the face about the horizontal axis of the image.
@@ -247,6 +261,13 @@ public class GoogleMLKitVision extends Plugin {
                                     // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleZ()
                                     faceObject.put("headEulerAngleZ", face.getHeadEulerAngleZ());
 
+                                    // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
+                                    // This returns null if the probability was not computed.
+                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getSmilingProbability()
+                                    Float smilingProbability = face.getSmilingProbability();
+                                    if (smilingProbability != null) {
+                                        faceObject.put("smilingProbability", smilingProbability);
+                                    }
                                     // Returns a value between 0.0 and 1.0 giving a probability that the face's left eye is open.
                                     // This returns null if the probability was not computed.
                                     // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getLeftEyeOpenProbability()
@@ -260,21 +281,6 @@ public class GoogleMLKitVision extends Plugin {
                                     Float rightEyeOpenProbability = face.getRightEyeOpenProbability();
                                     if (rightEyeOpenProbability != null) {
                                         faceObject.put("rightEyeOpenProbability", rightEyeOpenProbability);
-                                    }
-                                    // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
-                                    // This returns null if the probability was not computed.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getSmilingProbability()
-                                    Float smilingProbability = face.getSmilingProbability();
-                                    if (smilingProbability != null) {
-                                        faceObject.put("smilingProbability", smilingProbability);
-                                    }
-
-                                    // Returns the tracking ID if the tracking is enabled.
-                                    // Otherwise, returns null;
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getTrackingId()
-                                    Integer trackingId = face.getTrackingId();
-                                    if (trackingId != null) {
-                                        faceObject.put("trackingId", trackingId);
                                     }
 
                                     facesArray.put(faceObject);
