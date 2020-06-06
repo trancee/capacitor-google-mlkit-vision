@@ -8,7 +8,6 @@ ext {
 
 buildscript {
     repositories {
-        maven { url rootProject.projectDir.getAbsolutePath() + '/libraries' }
         google()
         jcenter()
     }
@@ -44,7 +43,6 @@ android {
 }
 
 repositories {
-    maven { url rootProject.projectDir.getAbsolutePath() + '/libraries' }
     google()
     jcenter()
     mavenCentral()
@@ -56,9 +54,6 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-
-    // Face features
-    implementation "com.google.mlkit:face-detection:$googleMLKitFaceDetectionVersion"
 
     // Use this dependency to use dynamically downloaded model in Google Play Service
     implementation "com.google.android.gms:play-services-mlkit-face-detection:$googleMLKitFaceDetectionVersion"
