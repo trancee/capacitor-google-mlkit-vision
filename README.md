@@ -16,3 +16,5 @@ There are two ways to integrate face detection: a bundled model which is part of
 
 ## iOS
 [Detect faces with ML Kit on iOS](https://developers.google.com/ml-kit/vision/face-detection/ios)
+
+You can use ML Kit to detect faces in images and video.

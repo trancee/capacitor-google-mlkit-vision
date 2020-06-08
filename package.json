@@ -1,6 +1,6 @@
 {
   "name": "capacitor-google-mlkit-vision",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "description": "Use on-device machine learning in your apps to easily solve real-world problems.",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -16,11 +16,11 @@
     "@capacitor/core": "latest"
   },
   "devDependencies": {
-    "rimraf": "^3.0.0",
-    "typescript": "^3.2.4",
-    "@capacitor/ios": "latest",
     "@capacitor/android": "latest",
-    "@rollup/plugin-node-resolve": "^8.0.0"
+    "@capacitor/ios": "latest",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.2.4"
   },
   "files": [
     "dist/",

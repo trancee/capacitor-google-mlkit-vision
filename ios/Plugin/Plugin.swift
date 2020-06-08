@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
-import MLKit
+import MLKitVision
+import MLKitFaceDetection
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -14,18 +15,19 @@ public class GoogleMLKitVision: CAPPlugin {
         // Options for specifying a face detector.
         let options: FaceDetectorOptions = FaceDetectorOptions()
 
-        if let content = call.getString("image") {
-            // Initializes a `VisionImage` object with the given image.
-            image = VisionImage.init(
-                // Image to use in vision detection.
-                image: UIImage(
-                    data: Data(base64Encoded: content)!
-                )!
-            )
-        } else {
+        guard let content = call.getString("image") else {
             call.reject("Must provide an image")
             return
         }
+        
+        // Initializes a `VisionImage` object with the given image.
+        image = VisionImage.init(
+            // Image to use in vision detection.
+            image: UIImage(
+                // An object that manages image data in your app.
+                data: Data(base64Encoded: content)!
+            )!
+        )
         
         if let optionsObject = call.getObject("options") {
             if let classificationMode = optionsObject["classificationMode"] {
