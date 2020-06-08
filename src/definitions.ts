@@ -200,32 +200,32 @@ export enum LandmarkType {
 export enum ContourType {
   // The outline of the subject's face.
   FACE = 1,
-  // The center of the left cheek.
-  LEFT_CHEEK = 14,
-  // The outline of the subject's left eye cavity.
-  LEFT_EYE = 6,
-  // The bottom outline of the subject's left eyebrow.
-  LEFT_EYEBROW_BOTTOM = 3,
   // The top outline of the subject's left eyebrow.
   LEFT_EYEBROW_TOP = 2,
-  // The bottom outline of the subject's lower lip.
-  LOWER_LIP_BOTTOM = 11,
-  // The top outline of the subject's lower lip.
-  LOWER_LIP_TOP = 10,
-  // The outline of the subject's nose bridge.
-  NOSE_BOTTOM = 13,
-  // The outline of the subject's nose bridge.
-  NOSE_BRIDGE = 12,
-  // The center of the right cheek.
-  RIGHT_CHEEK = 15,
-  // The outline of the subject's right eye cavity.
-  RIGHT_EYE = 7,
-  // The bottom outline of the subject's right eyebrow.
-  RIGHT_EYEBROW_BOTTOM = 5,
+  // The bottom outline of the subject's left eyebrow.
+  LEFT_EYEBROW_BOTTOM = 3,
   // The top outline of the subject's right eyebrow.
   RIGHT_EYEBROW_TOP = 4,
-  // The bottom outline of the subject's upper lip.
-  UPPER_LIP_BOTTOM = 9,
+  // The bottom outline of the subject's right eyebrow.
+  RIGHT_EYEBROW_BOTTOM = 5,
+  // The outline of the subject's left eye cavity.
+  LEFT_EYE = 6,
+  // The outline of the subject's right eye cavity.
+  RIGHT_EYE = 7,
   // The top outline of the subject's upper lip.
   UPPER_LIP_TOP = 8,
+  // The bottom outline of the subject's upper lip.
+  UPPER_LIP_BOTTOM = 9,
+  // The top outline of the subject's lower lip.
+  LOWER_LIP_TOP = 10,
+  // The bottom outline of the subject's lower lip.
+  LOWER_LIP_BOTTOM = 11,
+  // The outline of the subject's nose bridge.
+  NOSE_BRIDGE = 12,
+  // The outline of the subject's nose bridge.
+  NOSE_BOTTOM = 13,
+  // The center of the left cheek.
+  LEFT_CHEEK = 14,
+  // The center of the right cheek.
+  RIGHT_CHEEK = 15,
 }

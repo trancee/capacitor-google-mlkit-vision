@@ -118,7 +118,7 @@ public class GoogleMLKitVision: CAPPlugin {
                     var landmarkObject = [String: Any]()
 
                     // The type of the facial landmark.
-                    landmarkObject["type"] = landmark.type
+                    landmarkObject["type"] = landmarkType(type: landmark.type)
                     landmarkObject["position"] = pointHelper(point: point)
                     
                     landmarksArray.append(landmarkObject)
@@ -148,7 +148,7 @@ public class GoogleMLKitVision: CAPPlugin {
                     var contourObject = [String: Any]()
 
                     // The facial contour type.
-                    contourObject["type"] = contour.type
+                    contourObject["type"] = contourType(type: contour.type)
                     contourObject["points"] = pointsArray
 
                     contoursArray.append(contourObject)
@@ -205,7 +205,76 @@ public class GoogleMLKitVision: CAPPlugin {
         ])
     }
     
+    private func landmarkType(
+        type: FaceLandmarkType
+    ) -> Int? {
+        switch type {
+        // The center of the bottom lip.
+        case .mouthBottom: return 0
+        // The left cheek.
+        case .leftCheek: return 1
+        // The midpoint of the left ear tip and left ear lobe.
+        case .leftEar: return 3
+        // The left eye.
+        case .leftEye: return 4
+        // The left corner of the mouth
+        case .mouthLeft: return 5
+        // The midpoint between the nostrils where the nose meets the face.
+        case .noseBase: return 6
+        // The right cheek.
+        case .rightCheek: return 7
+        // The midpoint of the right ear tip and right ear lobe.
+        case .rightEar: return 9
+        // The right eye.
+        case .rightEye: return 10
+        // The right corner of the mouth
+        case .mouthRight: return 11
+        default:
+            return nil
+        }
+    }
+    
+    private func contourType(
+        type: FaceContourType
+    ) -> Int? {
+        switch type {
+        // A set of points that outline the face oval.
+        case .face: return 1
+        // A set of points that outline the top of the left eyebrow.
+        case .leftEyebrowTop: return 2
+        // A set of points that outline the bottom of the left eyebrow.
+        case .leftEyebrowBottom: return 3
+        // A set of points that outline the top of the right eyebrow.
+        case .rightEyebrowTop: return 4
+        // A set of points that outline the bottom of the right eyebrow.
+        case .rightEyebrowBottom: return 5
+        // A set of points that outline the left eye.
+        case .leftEye: return 6
+        // A set of points that outline the right eye.
+        case .rightEye: return 7
+        // A set of points that outline the top of the upper lip.
+        case .upperLipTop: return 8
+        // A set of points that outline the bottom of the upper lip.
+        case .upperLipBottom: return 9
+        // A set of points that outline the top of the lower lip.
+        case .lowerLipTop: return 10
+        // A set of points that outline the bottom of the lower lip.
+        case .lowerLipBottom: return 11
+        // A set of points that outline the nose bridge.
+        case .noseBridge: return 12
+        // A set of points that outline the bottom of the nose.
+        case .noseBottom: return 13
+        // A center point on the left cheek.
+        case .leftCheek: return 14
+        // A center point on the right cheek.
+        case .rightCheek: return 15
+        default:
+            return nil
+        }
+    }
+    
     private func pointHelper(
+        // A two-dimensional point in an image.
         point: VisionPoint
     ) -> [String: Any] {
         var pointObject = [String: Any]()
