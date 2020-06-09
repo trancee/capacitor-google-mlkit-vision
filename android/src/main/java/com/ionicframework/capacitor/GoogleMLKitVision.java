@@ -4,9 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.Base64;
-
-import androidx.annotation.NonNull;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -15,8 +14,6 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceContour;
@@ -54,8 +51,8 @@ public class GoogleMLKitVision extends Plugin {
         try {
             //Log.i(getLogTag(), "process");
 
-            InputImage image = null;
-            FaceDetectorOptions options = null;
+            final InputImage image;
+            final FaceDetectorOptions options;
 
             String content = call.getString("image", null);
             if (content != null) {
@@ -93,7 +90,7 @@ public class GoogleMLKitVision extends Plugin {
             if (optionsObject != null) {
                 if (optionsObject.has("classificationMode")) {
                     Integer classificationMode = optionsObject.getInteger("classificationMode");
-                    
+
                     // Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
                     builder.setClassificationMode(classificationMode);
                 }
@@ -106,7 +103,7 @@ public class GoogleMLKitVision extends Plugin {
 
                 if (optionsObject.has("landmarkMode")) {
                     Integer landmarkMode = optionsObject.getInteger("landmarkMode");
-                    
+
                     // Sets whether to detect no landmarks or all landmarks.
                     builder.setLandmarkMode(landmarkMode);
                 }
@@ -137,170 +134,178 @@ public class GoogleMLKitVision extends Plugin {
 
             // Gets a new instance of FaceDetector that detects faces in a supplied image.
             // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetection
-            FaceDetector faceDetector = FaceDetection.getClient(
+            final FaceDetector faceDetector = FaceDetection.getClient(
                     // The options for the face detector
                     options
             );
 
-            // Detects human faces from the supplied image.
-            // A Task that asynchronously returns a List of detected Faces
-            faceDetector
-                    .process(
-                            image
-                    )
-                    .addOnSuccessListener(
-                            faces -> {
-                                JSArray facesArray = new JSArray();
+            new Handler().post(
+                    (Runnable) () -> {
+                        // Detects human faces from the supplied image.
+                        // A Task that asynchronously returns a List of detected Faces
+                        faceDetector
+                                .process(
+                                        image
+                                )
+                                .addOnSuccessListener(
+                                        faces -> {
+                                            // Closes the detector and releases its resources.
+                                            // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetector#close()
+                                            faceDetector.close();
 
-                                // Represents a face detected by FaceDetector.
-                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face
-                                for (Face face : faces) {
-                                    JSObject faceObject = new JSObject();
+                                            JSArray facesArray = new JSArray();
 
-                                    { // Bounds
-                                        // Returns the axis-aligned bounding rectangle of the detected face.
-                                        Rect bounds = face.getBoundingBox();
+                                            // Represents a face detected by FaceDetector.
+                                            // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face
+                                            for (Face face : faces) {
+                                                JSObject faceObject = new JSObject();
 
-                                        JSObject boundsObject = new JSObject();
+                                                { // Bounds
+                                                    // Returns the axis-aligned bounding rectangle of the detected face.
+                                                    Rect bounds = face.getBoundingBox();
 
-                                        // The X coordinate of the left side of the rectangle
-                                        boundsObject.put("x", bounds.left);
-                                        // The Y coordinate of the top of the rectangle
-                                        boundsObject.put("y", bounds.top);
-                                        // The rectangle's width.
-                                        boundsObject.put("width", bounds.width());
-                                        // The rectangle's height.
-                                        boundsObject.put("height", bounds.height());
+                                                    JSObject boundsObject = new JSObject();
 
-                                        boundsObject.put("left", bounds.left);
-                                        boundsObject.put("top", bounds.top);
-                                        boundsObject.put("right", bounds.right);
-                                        boundsObject.put("bottom", bounds.bottom);
+                                                    // The X coordinate of the left side of the rectangle
+                                                    boundsObject.put("x", bounds.left);
+                                                    // The Y coordinate of the top of the rectangle
+                                                    boundsObject.put("y", bounds.top);
+                                                    // The rectangle's width.
+                                                    boundsObject.put("width", bounds.width());
+                                                    // The rectangle's height.
+                                                    boundsObject.put("height", bounds.height());
 
-                                        faceObject.put("bounds", boundsObject);
-                                    }
+                                                    boundsObject.put("left", bounds.left);
+                                                    boundsObject.put("top", bounds.top);
+                                                    boundsObject.put("right", bounds.right);
+                                                    boundsObject.put("bottom", bounds.bottom);
 
-                                    { // Landmarks
-                                        JSArray landmarksArray = new JSArray();
+                                                    faceObject.put("bounds", boundsObject);
+                                                }
 
-                                        // Gets a list of all available FaceLandmarks.
-                                        // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getAllLandmarks()
-                                        List<FaceLandmark> landmarks = face.getAllLandmarks();
+                                                { // Landmarks
+                                                    JSArray landmarksArray = new JSArray();
 
-                                        for (FaceLandmark landmark : landmarks) {
-                                            JSObject pointObject = pointHelper.get(landmark.getPosition());
+                                                    // Gets a list of all available FaceLandmarks.
+                                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getAllLandmarks()
+                                                    List<FaceLandmark> landmarks = face.getAllLandmarks();
 
-                                            JSObject landmarkObject = new JSObject();
+                                                    for (FaceLandmark landmark : landmarks) {
+                                                        JSObject pointObject = pointHelper.get(landmark.getPosition());
 
-                                            // Gets the FaceLandmark.LandmarkType type.
-                                            landmarkObject.put("type", landmark.getLandmarkType());
-                                            // Gets a 2D point for landmark position, where (0, 0) is the upper-left corner of the image.
-                                            landmarkObject.put("position", pointObject);
+                                                        JSObject landmarkObject = new JSObject();
 
-                                            landmarksArray.put(landmarkObject);
-                                        }
+                                                        // Gets the FaceLandmark.LandmarkType type.
+                                                        landmarkObject.put("type", landmark.getLandmarkType());
+                                                        // Gets a 2D point for landmark position, where (0, 0) is the upper-left corner of the image.
+                                                        landmarkObject.put("position", pointObject);
 
-                                        if (landmarksArray.length() > 0) {
-                                            faceObject.put("landmarks", landmarksArray);
-                                        }
-                                    }
+                                                        landmarksArray.put(landmarkObject);
+                                                    }
 
-                                    { // Contours
-                                        JSArray contoursArray = new JSArray();
+                                                    if (landmarksArray.length() > 0) {
+                                                        faceObject.put("landmarks", landmarksArray);
+                                                    }
+                                                }
 
-                                        // Gets a list of all available FaceContours.
-                                        // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getAllContours()
-                                        List<FaceContour> contours = face.getAllContours();
+                                                { // Contours
+                                                    JSArray contoursArray = new JSArray();
 
-                                        for (FaceContour contour : contours) {
-                                            // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
-                                            // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceContour#getPoints()
-                                            List<PointF> points = contour.getPoints();
+                                                    // Gets a list of all available FaceContours.
+                                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getAllContours()
+                                                    List<FaceContour> contours = face.getAllContours();
 
-                                            JSArray pointsArray = new JSArray();
+                                                    for (FaceContour contour : contours) {
+                                                        // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
+                                                        // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceContour#getPoints()
+                                                        List<PointF> points = contour.getPoints();
 
-                                            for (PointF point : points) {
-                                                pointsArray.put(pointHelper.get(point));
+                                                        JSArray pointsArray = new JSArray();
+
+                                                        for (PointF point : points) {
+                                                            pointsArray.put(pointHelper.get(point));
+                                                        }
+
+                                                        if (pointsArray.length() > 0) {
+                                                            JSObject contourObject = new JSObject();
+
+                                                            // Gets the FaceContour.ContourType type.
+                                                            contourObject.put("type", contour.getFaceContourType());
+                                                            // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
+                                                            contourObject.put("points", pointsArray);
+
+                                                            contoursArray.put(contourObject);
+                                                        }
+                                                    }
+
+                                                    if (contoursArray.length() > 0) {
+                                                        faceObject.put("contours", contoursArray);
+                                                    }
+                                                }
+
+                                                // Returns the tracking ID if the tracking is enabled.
+                                                // Otherwise, returns null;
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getTrackingId()
+                                                Integer trackingId = face.getTrackingId();
+                                                if (trackingId != null) {
+                                                    faceObject.put("trackingId", trackingId);
+                                                }
+
+                                                // Returns the rotation of the face about the horizontal axis of the image.
+                                                // Positive euler X is the face is looking up.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleX()
+                                                faceObject.put("headEulerAngleX", face.getHeadEulerAngleX());
+                                                // Returns the rotation of the face about the vertical axis of the image.
+                                                // Positive euler y is when the face turns toward the right side of the image that is being processed.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleY()
+                                                faceObject.put("headEulerAngleY", face.getHeadEulerAngleY());
+                                                // Returns the rotation of the face about the axis pointing out of the image.
+                                                // Positive euler z is a counter-clockwise rotation within the image plane.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleZ()
+                                                faceObject.put("headEulerAngleZ", face.getHeadEulerAngleZ());
+
+                                                // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
+                                                // This returns null if the probability was not computed.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getSmilingProbability()
+                                                Float smilingProbability = face.getSmilingProbability();
+                                                if (smilingProbability != null) {
+                                                    faceObject.put("smilingProbability", smilingProbability);
+                                                }
+                                                // Returns a value between 0.0 and 1.0 giving a probability that the face's left eye is open.
+                                                // This returns null if the probability was not computed.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getLeftEyeOpenProbability()
+                                                Float leftEyeOpenProbability = face.getLeftEyeOpenProbability();
+                                                if (leftEyeOpenProbability != null) {
+                                                    faceObject.put("leftEyeOpenProbability", leftEyeOpenProbability);
+                                                }
+                                                // Returns a value between 0.0 and 1.0 giving a probability that the face's right eye is open.
+                                                // This returns null if the probability was not computed.
+                                                // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getRightEyeOpenProbability()
+                                                Float rightEyeOpenProbability = face.getRightEyeOpenProbability();
+                                                if (rightEyeOpenProbability != null) {
+                                                    faceObject.put("rightEyeOpenProbability", rightEyeOpenProbability);
+                                                }
+
+                                                facesArray.put(faceObject);
                                             }
 
-                                            if (pointsArray.length() > 0) {
-                                                JSObject contourObject = new JSObject();
+                                            JSObject data = new JSObject();
+                                            data.put("faces", facesArray);
 
-                                                // Gets the FaceContour.ContourType type.
-                                                contourObject.put("type", contour.getFaceContourType());
-                                                // Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image.
-                                                contourObject.put("points", pointsArray);
+                                            call.success(data);
+                                        })
+                                .addOnFailureListener(
+                                        e -> {
+                                            e.printStackTrace();
 
-                                                contoursArray.put(contourObject);
-                                            }
-                                        }
+                                            // Closes the detector and releases its resources.
+                                            // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetector#close()
+                                            faceDetector.close();
 
-                                        if (contoursArray.length() > 0) {
-                                            faceObject.put("contours", contoursArray);
-                                        }
-                                    }
-
-                                    // Returns the tracking ID if the tracking is enabled.
-                                    // Otherwise, returns null;
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getTrackingId()
-                                    Integer trackingId = face.getTrackingId();
-                                    if (trackingId != null) {
-                                        faceObject.put("trackingId", trackingId);
-                                    }
-
-                                    // Returns the rotation of the face about the horizontal axis of the image.
-                                    // Positive euler X is the face is looking up.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleX()
-                                    faceObject.put("headEulerAngleX", face.getHeadEulerAngleX());
-                                    // Returns the rotation of the face about the vertical axis of the image.
-                                    // Positive euler y is when the face turns toward the right side of the image that is being processed.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleY()
-                                    faceObject.put("headEulerAngleY", face.getHeadEulerAngleY());
-                                    // Returns the rotation of the face about the axis pointing out of the image.
-                                    // Positive euler z is a counter-clockwise rotation within the image plane.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getHeadEulerAngleZ()
-                                    faceObject.put("headEulerAngleZ", face.getHeadEulerAngleZ());
-
-                                    // Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
-                                    // This returns null if the probability was not computed.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getSmilingProbability()
-                                    Float smilingProbability = face.getSmilingProbability();
-                                    if (smilingProbability != null) {
-                                        faceObject.put("smilingProbability", smilingProbability);
-                                    }
-                                    // Returns a value between 0.0 and 1.0 giving a probability that the face's left eye is open.
-                                    // This returns null if the probability was not computed.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getLeftEyeOpenProbability()
-                                    Float leftEyeOpenProbability = face.getLeftEyeOpenProbability();
-                                    if (leftEyeOpenProbability != null) {
-                                        faceObject.put("leftEyeOpenProbability", leftEyeOpenProbability);
-                                    }
-                                    // Returns a value between 0.0 and 1.0 giving a probability that the face's right eye is open.
-                                    // This returns null if the probability was not computed.
-                                    // https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face#getRightEyeOpenProbability()
-                                    Float rightEyeOpenProbability = face.getRightEyeOpenProbability();
-                                    if (rightEyeOpenProbability != null) {
-                                        faceObject.put("rightEyeOpenProbability", rightEyeOpenProbability);
-                                    }
-
-                                    facesArray.put(faceObject);
-                                }
-
-                                JSObject data = new JSObject();
-                                data.put("faces", facesArray);
-
-                                call.success(data);
-                            })
-                    .addOnFailureListener(
-                            e -> {
-                                e.printStackTrace();
-
-                                call.error(e.getLocalizedMessage(), e);
-                            });
-
-            // Closes the detector and releases its resources.
-            // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetector#close()
-            faceDetector.close();
+                                            call.error(e.getLocalizedMessage(), e);
+                                        });
+                    }
+            );
         } catch (Exception e) {
             call.error(e.getLocalizedMessage(), e);
         }

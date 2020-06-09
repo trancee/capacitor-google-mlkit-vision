@@ -1,7 +1,7 @@
 
   Pod::Spec.new do |s|
     s.name = 'CapacitorGoogleMlkitVision'
-    s.version = '0.1.5'
+    s.version = '1.0.0'
     s.summary = 'Use on-device machine learning in your apps to easily solve real-world problems.'
     s.license = 'MIT'
     s.homepage = 'https://github.com/trancee/capacitor-google-mlkit-vision.git'
