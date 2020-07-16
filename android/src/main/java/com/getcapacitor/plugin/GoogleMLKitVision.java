@@ -1,4 +1,4 @@
-package com.ionicframework.capacitor;
+package com.getcapacitor.plugin;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,8 +25,6 @@ import com.google.mlkit.vision.face.FaceLandmark;
 import java.util.List;
 
 @NativePlugin(
-        // Some Plugins will require you to request permissions.
-        // First declare your plugin permissions.
         permissions = {
         }
 )
@@ -88,12 +86,6 @@ public class GoogleMLKitVision extends Plugin {
 
             JSObject optionsObject = call.getObject("options", null);
             if (optionsObject != null) {
-                if (optionsObject.has("classificationMode")) {
-                    Integer classificationMode = optionsObject.getInteger("classificationMode");
-
-                    // Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
-                    builder.setClassificationMode(classificationMode);
-                }
                 if (optionsObject.has("performanceMode")) {
                     Integer performanceMode = optionsObject.getInteger("performanceMode");
 
@@ -112,6 +104,13 @@ public class GoogleMLKitVision extends Plugin {
 
                     // Sets whether to detect no contours or all contours.
                     builder.setContourMode(contourMode);
+                }
+
+                if (optionsObject.has("classificationMode")) {
+                    Integer classificationMode = optionsObject.getInteger("classificationMode");
+
+                    // Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
+                    builder.setClassificationMode(classificationMode);
                 }
 
                 if (optionsObject.has("minFaceSize")) {

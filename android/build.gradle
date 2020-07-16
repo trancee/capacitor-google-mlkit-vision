@@ -3,7 +3,7 @@ ext {
     androidxJunitVersion =  project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.1'
     androidxEspressoCoreVersion =  project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.2.0'
 
-    googleMLKitFaceDetectionVersion =  project.hasProperty('googleMLKitFaceDetectionVersion') ? rootProject.ext.googleMLKitFaceDetectionVersion : '16.0.0'
+    googleMLKitFaceDetectionVersion =  project.hasProperty('googleMLKitFaceDetectionVersion') ? rootProject.ext.googleMLKitFaceDetectionVersion : '16.1.0'
 }
 
 buildscript {
@@ -12,7 +12,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
 }
 

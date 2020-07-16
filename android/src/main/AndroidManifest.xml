@@ -1,4 +1,4 @@
 
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.ionicframework.capacitor.googlemlkitvision">
+      package="com.getcapacitor.plugin.googlemlkitvision">
   </manifest>

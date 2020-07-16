@@ -6,10 +6,6 @@ declare module "@capacitor/core" {
 
 // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions
 export interface FaceDetectorOptions {
-  // Defines options for characterizing attributes such as "smiling" and "eyes open".
-  // Processing time increases as extra classification to search.
-  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ClassificationMode
-  classificationMode?: ClassificationMode,
   // Defines options to control accuracy / speed trade-offs in performing face detection.
   // In general, choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster mode will generally result in detecting fewer faces.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.PerformanceMode
@@ -23,6 +19,11 @@ export interface FaceDetectorOptions {
   // Processing time increases as the number of contours to search.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ContourMode
   contourMode?: ContourMode,
+
+  // Defines options for characterizing attributes such as "smiling" and "eyes open".
+  // Processing time increases as extra classification to search.
+  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.ClassificationMode
+  classificationMode?: ClassificationMode,
 
   // Sets the smallest desired face size, expressed as a proportion of the width of the head to the image width.
   // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetectorOptions.Builder#public-facedetectoroptions.builder-setminfacesize-float-minfacesize

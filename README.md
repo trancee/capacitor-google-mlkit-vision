@@ -8,6 +8,8 @@ With face detection, you can get the information you need to perform tasks like 
 
 [Face Detection Concepts](https://developers.google.com/ml-kit/vision/face-detection/face-detection-concepts)
 
+[ML Kit Release Notes](https://developers.google.com/ml-kit/release-notes)
+
 ## Android
 
 [Detect faces with ML Kit on Android](https://developers.google.com/ml-kit/vision/face-detection/android)

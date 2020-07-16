@@ -19,7 +19,7 @@ public class GoogleMLKitVision: CAPPlugin {
             call.reject("Must provide an image")
             return
         }
-        
+
         // Initializes a `VisionImage` object with the given image.
         image = VisionImage.init(
             // Image to use in vision detection.
@@ -28,17 +28,13 @@ public class GoogleMLKitVision: CAPPlugin {
                 data: Data(base64Encoded: content)!
             )!
         )
-        
+
         if let optionsObject = call.getObject("options") {
-            if let classificationMode = optionsObject["classificationMode"] {
-                // The face detector classification mode for characterizing attributes such as smiling.
-                options.classificationMode = FaceDetectorClassificationMode(rawValue: classificationMode as! Int)
-            }
             if let performanceMode = optionsObject["performanceMode"] {
                 // The face detector performance mode that determines the accuracy of the results and the speed of the detection.
                 options.performanceMode = FaceDetectorPerformanceMode(rawValue: performanceMode as! Int)
             }
-            
+
             if let landmarkMode = optionsObject["landmarkMode"] {
                 // The face detector landmark mode that determines the type of landmark results returned by detection.
                 options.landmarkMode = FaceDetectorLandmarkMode(rawValue: landmarkMode as! Int)
@@ -46,6 +42,11 @@ public class GoogleMLKitVision: CAPPlugin {
             if let contourMode = optionsObject["contourMode"] {
                 // The face detector contour mode that determines the type of contour results returned by detection.
                 options.contourMode = FaceDetectorContourMode(rawValue: contourMode as! Int)
+            }
+
+            if let classificationMode = optionsObject["classificationMode"] {
+                // The face detector classification mode for characterizing attributes such as smiling.
+                options.classificationMode = FaceDetectorClassificationMode(rawValue: classificationMode as! Int)
             }
 
             if let minFaceSize = optionsObject["minFaceSize"] {
@@ -78,7 +79,7 @@ public class GoogleMLKitVision: CAPPlugin {
             call.error(error.localizedDescription, error)
             return
         }
-        
+
         var facesArray = [Any]()
 
         for face in faces {
@@ -104,7 +105,7 @@ public class GoogleMLKitVision: CAPPlugin {
 
                 faceObject["bounds"] = boundsObject
             }
-            
+
             do { // Landmarks
                 var landmarksArray = [Any]()
 
@@ -120,10 +121,10 @@ public class GoogleMLKitVision: CAPPlugin {
                     // The type of the facial landmark.
                     landmarkObject["type"] = landmarkType(type: landmark.type)
                     landmarkObject["position"] = pointHelper(point: point)
-                    
+
                     landmarksArray.append(landmarkObject)
                 }
-                
+
                 if landmarksArray.count > 0 {
                     faceObject["landmarks"] = landmarksArray
                 }
@@ -153,12 +154,12 @@ public class GoogleMLKitVision: CAPPlugin {
 
                     contoursArray.append(contourObject)
                 }
-                
+
                 if contoursArray.count > 0 {
                     faceObject["contours"] = contoursArray
                 }
             }
-            
+
             // Indicates whether the face has a tracking ID.
             if face.hasTrackingID {
                 // The tracking identifier of the face.
@@ -204,7 +205,7 @@ public class GoogleMLKitVision: CAPPlugin {
             "faces": facesArray
         ])
     }
-    
+
     private func landmarkType(
         type: FaceLandmarkType
     ) -> Int? {
@@ -233,7 +234,7 @@ public class GoogleMLKitVision: CAPPlugin {
             return nil
         }
     }
-    
+
     private func contourType(
         type: FaceContourType
     ) -> Int? {
@@ -272,7 +273,7 @@ public class GoogleMLKitVision: CAPPlugin {
             return nil
         }
     }
-    
+
     private func pointHelper(
         // A two-dimensional point in an image.
         point: VisionPoint
