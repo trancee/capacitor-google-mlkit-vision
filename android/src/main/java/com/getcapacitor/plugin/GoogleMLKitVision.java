@@ -6,6 +6,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.util.Base64;
+import android.util.Log;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -24,10 +25,7 @@ import com.google.mlkit.vision.face.FaceLandmark;
 
 import java.util.List;
 
-@NativePlugin(
-        permissions = {
-        }
-)
+@NativePlugin()
 public class GoogleMLKitVision extends Plugin {
     private interface PointHelper {
         JSObject get(PointF point);
@@ -47,7 +45,7 @@ public class GoogleMLKitVision extends Plugin {
     @PluginMethod()
     public void process(final PluginCall call) {
         try {
-            //Log.i(getLogTag(), "process");
+//            Log.i(getLogTag(), "Processing.");
 
             final InputImage image;
             final FaceDetectorOptions options;
@@ -148,6 +146,8 @@ public class GoogleMLKitVision extends Plugin {
                                 )
                                 .addOnSuccessListener(
                                         faces -> {
+//                                            Log.i(getLogTag(), "Process Success.");
+
                                             // Closes the detector and releases its resources.
                                             // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceDetector#close()
                                             faceDetector.close();
@@ -294,7 +294,9 @@ public class GoogleMLKitVision extends Plugin {
                                             call.success(data);
                                         })
                                 .addOnFailureListener(
-                                        e -> {
+                                        (Exception e) -> {
+//                                            Log.e(getLogTag(), "Process Failure.", e);
+
                                             e.printStackTrace();
 
                                             // Closes the detector and releases its resources.
