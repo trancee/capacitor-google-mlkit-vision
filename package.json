@@ -2,25 +2,36 @@
   "name": "capacitor-google-mlkit-vision",
   "version": "1.0.3",
   "description": "Use on-device machine learning in your apps to easily solve real-world problems.",
-  "main": "dist/esm/index.js",
+  "main": "dist/plugin.js",
+  "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc && rollup -c",
+    "lint": "npm run prettier -- --check && npm run swiftlint -- lint",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
+    "swiftlint": "node-swiftlint",
+    "build": "npm run clean && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
   "author": "Philipp Grosswiler",
   "license": "MIT",
-  "dependencies": {
-    "@capacitor/core": "^2.4.0"
-  },
   "devDependencies": {
-    "@capacitor/android": "^2.4.0",
-    "@capacitor/ios": "^2.4.0",
-    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@capacitor/android": "^2.4.3",
+    "@capacitor/core": "^2.4.3",
+    "@capacitor/ios": "^2.4.3",
+    "@ionic/prettier-config": "^1.0.0",
+    "@ionic/swiftlint-config": "^1.0.0",
+    "@rollup/plugin-node-resolve": "^8.1.0",
+    "prettier": "^2.0.5",
+    "prettier-plugin-java": "^0.8.0",
     "rimraf": "^3.0.0",
-    "typescript": "^3.9.7"
+    "rollup": "^2.21.0",
+    "swiftlint": "^1.0.1",
+    "typescript": "~3.8.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^2.4.3"
   },
   "files": [
     "dist/",
@@ -41,6 +52,8 @@
       "src": "android"
     }
   },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
   "repository": {
     "type": "git",
     "url": "https://github.com/trancee/capacitor-google-mlkit-vision.git"

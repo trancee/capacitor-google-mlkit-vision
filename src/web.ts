@@ -10,7 +10,7 @@ export class GoogleMLKitVisionWeb extends WebPlugin implements GoogleMLKitVision
   constructor() {
     super({
       name: 'GoogleMLKitVision',
-      platforms: ['web']
+      platforms: ['web'],
     });
   }
 
