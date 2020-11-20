@@ -1,6 +1,6 @@
 {
   "name": "capacitor-google-mlkit-vision",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Use on-device machine learning in your apps to easily solve real-world problems.",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
